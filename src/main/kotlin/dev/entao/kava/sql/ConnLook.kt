@@ -28,7 +28,7 @@ object ConnLook {
                 nameList += a.name
             }
         } catch (ex: NameNotFoundException) {
-            ex.printStackTrace()
+//            ex.printStackTrace()
         }
         Task.setCleanBlock("connlook", this::cleanThreadConnections)
     }
