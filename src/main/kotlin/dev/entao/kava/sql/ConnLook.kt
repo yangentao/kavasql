@@ -3,6 +3,7 @@ package dev.entao.kava.sql
 import dev.entao.kava.base.Task
 import java.sql.Connection
 import javax.naming.InitialContext
+import javax.naming.NameNotFoundException
 import javax.sql.DataSource
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -20,10 +21,14 @@ object ConnLook {
         }
 
     init {
-        val ls = ctx.list(prefix)
-        while (ls.hasMore()) {
-            val a = ls.next()
-            nameList += a.name
+        try {
+            val ls = ctx.list(prefix)
+            while (ls.hasMore()) {
+                val a = ls.next()
+                nameList += a.name
+            }
+        } catch (ex: NameNotFoundException) {
+            ex.printStackTrace()
         }
         Task.setCleanBlock("connlook", this::cleanThreadConnections)
     }
