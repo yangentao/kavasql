@@ -141,13 +141,13 @@ open class Model(val model: ModelMap = ModelMap()) {
 	}
 
 	//仅包含有值的列, modMap中出现
-	@dev.entao.kava.sql.Exclude
+	@Exclude
 	val modelPropertiesExists: List<KMutableProperty<*>>
 		get() {
 			return this::class.modelProperties.filter { model.containsKey(it.userName) }
 		}
 
-	@dev.entao.kava.sql.Exclude
+	@Exclude
 	val whereByPrimaryKey: Where?
 		get() {
 			var w: Where? = null

@@ -147,12 +147,12 @@ class ModelMerge(private val modelClass: KClass<*>) {
 	}
 
 	private fun makeTypeString(p: KMutableProperty<*>): String {
-		val sqlType = p.findAnnotation<dev.entao.kava.sql.SQLType>()
+		val sqlType = p.findAnnotation<SQLType>()
 		if (sqlType != null) {
 			return sqlType.value
 		}
 		if (p.isTypeString) {
-			val L = p.findAnnotation<dev.entao.kava.sql.Length>() ?: return "VARCHAR(256)"
+			val L = p.findAnnotation<Length>() ?: return "VARCHAR(256)"
 			if (L.value <= 0) {
 				return "VARCHAR(256)"
 			} else if (L.value >= 65535) {

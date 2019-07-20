@@ -1,5 +1,6 @@
 package dev.entao.kava.sql
 
+import dev.entao.kava.base.Exclude
 import dev.entao.kava.base.Name
 import dev.entao.kava.base.userName
 import dev.entao.kava.base.ownerClass
@@ -28,9 +29,9 @@ val KProperty<*>.sqlFullName: String
 
 val KProperty<*>.isExcluded: Boolean
 	get() {
-		return this.findAnnotation<dev.entao.kava.sql.Exclude>() != null
+		return this.findAnnotation<Exclude>() != null
 	}
 val KProperty<*>.isPrimaryKey: Boolean
 	get() {
-		return this.findAnnotation<dev.entao.kava.sql.PrimaryKey>() != null
+		return this.findAnnotation<PrimaryKey>() != null
 	}

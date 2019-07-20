@@ -21,10 +21,6 @@ annotation class PrimaryKey
 @Retention(AnnotationRetention.RUNTIME)
 annotation class AutoInc
 
-//字段长度--字符串
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Length(val value: Int, val msg: String = "")
 
 //是否唯一约束
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD)
@@ -46,10 +42,6 @@ annotation class Index
 @Retention(AnnotationRetention.RUNTIME)
 annotation class NotNull
 
-//是否忽略
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD, AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Exclude
 
 //自动创建表
 @Target(AnnotationTarget.CLASS)
