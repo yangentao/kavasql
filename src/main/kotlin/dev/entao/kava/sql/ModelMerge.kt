@@ -28,7 +28,6 @@ class ModelMerge(private val modelClass: KClass<*>) {
 			} else {
 				val c = ConnLook.named(modelClass)
 				val colList = c.tableDesc(tabName)
-				logd("MergeTable:")
 				mergeTable(c, tabName, colList, pList)
 
 				val indexList = c.tableIndexList(tabName)
@@ -49,11 +48,11 @@ class ModelMerge(private val modelClass: KClass<*>) {
 	}
 
 	private fun mergeIndex(c: Connection, tabName: String, cols: List<IndexInfo>, ps: List<KMutableProperty<*>>) {
-		val ls = ps.filter { it.hasAnnotation<dev.entao.kava.sql.Index>() || it.hasAnnotation<dev.entao.kava.sql.ForeignKey>() }
+		val ls = ps.filter { it.hasAnnotation<Index>() || it.hasAnnotation<ForeignKey>() }
 		for (p in ls) {
 			if (null == cols.find { it.colName == p.userName }) {
-				val pname = p.userName
-				c.exec("ALTER TABLE $tabName ADD INDEX `${pname}_INDEX` (`$pname`)")
+				val idxName = "${p.userName}_INDEX".sqlEscaped
+				c.exec("ALTER TABLE $tabName ADD INDEX $idxName (${p.sqlName})")
 			}
 		}
 	}
@@ -67,7 +66,7 @@ class ModelMerge(private val modelClass: KClass<*>) {
 		}
 		val pks = primaryKeyColumns
 		if (pks.isNotEmpty()) {
-			val pkcol = pks.map { "`" + it.userName + "`" }.joinToString(",")
+			val pkcol = pks.map { it.sqlName }.joinToString(",")
 			ls.add("PRIMARY KEY ($pkcol)")
 		}
 		val uls = columnProperties.filter {
@@ -75,8 +74,8 @@ class ModelMerge(private val modelClass: KClass<*>) {
 			u != null && u.value.trim().isEmpty()
 		}
 		uls.forEach {
-			val pname = it.userName
-			ls.add("UNIQUE INDEX `${pname}_UNIQUE` (`$pname` ASC)")
+			val idxName = "${it.userName}_UNIQUE".sqlEscaped
+			ls.add("UNIQUE INDEX $idxName (${it.sqlName} ASC)")
 		}
 
 		val uls2 = columnProperties.filter {
@@ -90,15 +89,16 @@ class ModelMerge(private val modelClass: KClass<*>) {
 				val cols = uls2.filter {
 					it.findAnnotation<dev.entao.kava.sql.Unique>()?.value == first.findAnnotation<dev.entao.kava.sql.Unique>()?.value
 				}
-				val cs = cols.map { "`" + it.userName + "`" }.joinToString(",")
-				ls.add("UNIQUE INDEX `${uname}_UNIQUE` ($cs)")
+				val cs = cols.map { it.sqlName }.joinToString(",")
+				val idxName = "${uname}_UNIQUE".sqlEscaped
+				ls.add("UNIQUE INDEX $idxName ($cs)")
 				uls2.removeAll(cols)
 			}
 		}
 		val indexList = columnProperties.filter { it.hasAnnotation<dev.entao.kava.sql.Index>() || it.hasAnnotation<dev.entao.kava.sql.ForeignKey>() }
 		indexList.forEach {
-			val pname = it.userName
-			ls.add("INDEX `${pname}_INDEX` (`$pname`)")
+			val idxName = "${it.userName}_INDEX".sqlEscaped
+			ls.add("INDEX $idxName (${it.sqlName})")
 		}
 
 		val n = c.createTable(tabName, ls)
@@ -114,7 +114,7 @@ class ModelMerge(private val modelClass: KClass<*>) {
 
 	private fun defColumnn(p: KMutableProperty<*>): String {
 		val sb = StringBuilder(64)
-		sb.append("`" + p.userName + "`")
+		sb.append(p.sqlName)
 		sb.append(" ")
 		val typeDefStr = makeTypeString(p)
 		sb.append(typeDefStr)
@@ -134,7 +134,7 @@ class ModelMerge(private val modelClass: KClass<*>) {
 			}
 		}
 		sb.append(" ")
-		if (p.hasAnnotation<dev.entao.kava.sql.AutoInc>()) {
+		if (p.hasAnnotation<AutoInc>()) {
 			sb.append("AUTO_INCREMENT")
 		}
 		sb.append(" ")

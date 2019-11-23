@@ -73,13 +73,7 @@ class SQLQuery {
 	}
 
 	fun from(vararg tables: String): SQLQuery {
-		fromArr.addAll(tables.map {
-			if (it.startsWith("`")) {
-				it
-			} else {
-				"`$it`"
-			}
-		})
+		fromArr.addAll(tables)
 		return this
 	}
 

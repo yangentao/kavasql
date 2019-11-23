@@ -40,28 +40,6 @@ infix fun String.AS(other: String): String {
 	return "$this AS $other"
 }
 
-private const val ECH = '`'
-fun escCol(c: String): String {
-	if (c.startsWith(ECH) && c.endsWith(ECH)) {
-		return c
-	}
-	if ('.' !in c) {
-		return "$ECH$c$ECH"
-	}
-	val sb = StringBuilder(c.length + 1)
-	sb.append(ECH)
-	for (ch in c) {
-		if (ch == '.') {
-			sb.append(ECH)
-			sb.append(ch)
-			sb.append(ECH)
-		} else {
-			sb.append(ch)
-		}
-	}
-	sb.append(ECH)
-	return sb.toString()
-}
 
 class SQL(val conn: Connection? = null) {
 	private val buf = StringBuilder(512)
